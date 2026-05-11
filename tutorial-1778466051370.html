@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorial: Assinatura Digital de Documentos</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Paleta de Cores VIVA - Manual da Marca */
+        :root {
+            --viva-preto: #000000;
+            --viva-branco: #FFFFFF;
+            --viva-verde-limao: #E6FF2A;
+            --viva-azul: #005F6B;
+            --viva-cinza: #898A8E;
+        }
+
+        /* Regras de Acessibilidade e Design Mobile-First */
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--viva-branco);
+            color: var(--viva-preto);
+            margin: 0;
+            padding: 24px;
+            max-width: 600px; /* Mantém a leitura agradável em telas maiores sem perder o formato lista */
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+            display: block;
+        }
+
+        /* Tamanho base para sênior: mínimo 32px para títulos */
+        h1 {
+            color: var(--viva-azul);
+            font-size: 36px;
+            font-weight: 700;
+            border-bottom: 8px solid var(--viva-verde-limao);
+            padding-bottom: 12px;
+            margin-bottom: 40px;
+        }
+
+        h2 {
+            color: var(--viva-azul);
+            font-size: 32px;
+            font-weight: 700;
+            margin-top: 48px;
+            margin-bottom: 16px;
+        }
+
+        /* Tamanho base para sênior: mínimo 22px para parágrafos */
+        p {
+            font-size: 24px;
+            font-weight: 400;
+            margin-bottom: 24px;
+        }
+
+        .step-container {
+            display: block;
+            margin-bottom: 60px;
+        }
+
+        /* Container de imagem para posicionamento relativo dos destaques */
+        .image-wrapper {
+            position: relative;
+            display: block;
+            width: 100%;
+            margin: 24px 0;
+        }
+
+        /* Imagens Responsivas e com borda de separação */
+        .image-wrapper img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            border: 3px solid var(--viva-cinza);
+        }
+
+        /* Estilo dos marcadores visuais (WCAG Focus Simulation) */
+        .highlight-rect {
+            position: absolute;
+            border: 4px solid red;
+            border-radius: 6px;
+            pointer-events: none;
+            z-index: 10;
+            /* Leve sombra para destacar do fundo caso a imagem tenha cor parecida */
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.8), inset 0 0 0 2px rgba(255, 255, 255, 0.8);
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Como Assinar Documentos Digitalmente</h1>
+
+    <div class="step-container">
+        <h2>Passo 1</h2>
+        <p>Abra o aplicativo do gov.br e acesse a conta. Selecione o ícone de <strong>"casa"</strong>, no canto inferior esquerdo, para ir a aba de início. Na parte de "serviços", selecione <strong>"Assinar documentos digitalmente"</strong>.</p>
+        
+        <div class="image-wrapper">
+            <img src="{{IMG_1}}" alt="Tela inicial do aplicativo gov.br. O ícone de Início no rodapé e a opção Assinar documentos digitalmente na lista de serviços estão destacados com um retângulo vermelho.">
+            <div class="highlight-rect" style="top: 90%; left: 2%; width: 18%; height: 8%;"></div>
+            <div class="highlight-rect" style="top: 72.5%; left: 4%; width: 92%; height: 7%;"></div>
+        </div>
+    </div>
+
+    <div class="step-container">
+        <h2>Passo 2</h2>
+        <p>Escolha o documento desejado tocando no botão indicado na tela. Em seguida, escolha a parte do documento que deve receber a assinatura.</p>
+        
+        <div class="image-wrapper">
+            <img src="{{IMG_2}}" alt="Tela de escolha de arquivo no portal de assinatura. O botão central 'Escolher arquivo' está destacado em vermelho.">
+            <div class="highlight-rect" style="top: 36%; left: 8%; width: 84%; height: 8%;"></div>
+        </div>
+    </div>
+
+    <div class="step-container">
+        <h2>Passo 3</h2>
+        <p>Forneça o código recebido em uma mensagem do aplicativo do gov.br para validar a assinatura, preenchendo o campo e apertando no botão de autorizar.</p>
+        
+        <div class="image-wrapper">
+            <img src="{{IMG_3}}" alt="Tela de autorização. O campo de texto para digitar o código e o botão azul 'Autorizar' logo abaixo estão destacados.">
+            <div class="highlight-rect" style="top: 53%; left: 6%; width: 88%; height: 6%;"></div>
+            <div class="highlight-rect" style="top: 60%; left: 6%; width: 88%; height: 6%;"></div>
+        </div>
+    </div>
+
+    <div class="step-container">
+        <h2>Passo 4</h2>
+        <p>Selecione o <strong>"ícone de download"</strong>, com a seta apontada para baixo, para guardar o documento assinado no seu dispositivo.</p>
+        
+        <div class="image-wrapper">
+            <img src="{{IMG_4}}" alt="Tela de sucesso da assinatura. O link escrito 'Baixar arquivo assinado' junto ao ícone de download está destacado.">
+            <div class="highlight-rect" style="top: 56.5%; left: 42%; width: 52%; height: 5%;"></div>
+        </div>
+    </div>
+
+</body>
+</html>
