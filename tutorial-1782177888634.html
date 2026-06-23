@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html><head></head><body><div id="detox-calculator-container">
+  <style>
+    #detox-calculator-container {
+      font-family: Arial, sans-serif;
+      background-color: #005F6B;
+      color: #ffffff;
+      padding: 32px 24px;
+      border-radius: 8px;
+      max-width: 100%;
+      box-sizing: border-box;
+      font-size: 18px;
+    }
+    .detox-input-group {
+      margin-bottom: 24px;
+    }
+    .detox-label {
+      display: block;
+      font-size: 18px;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+    .detox-sub-label {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 8px;
+      color: #cde6e9;
+    }
+    .detox-input {
+      width: 100%;
+      padding: 16px;
+      font-size: 18px;
+      border: 2px solid #ffffff;
+      border-radius: 6px;
+      background-color: #ffffff;
+      color: #333333;
+      box-sizing: border-box;
+    }
+    .detox-btn {
+      width: 100%;
+      background-color: #E6FF2A;
+      color: #005F6B;
+      border: none;
+      padding: 16px;
+      font-size: 20px;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background-color 0.2s;
+    }
+    .detox-btn:hover {
+      background-color: #cce600;
+    }
+    #detox-result {
+      margin-top: 28px;
+      padding: 20px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-left: 5px solid #E6FF2A;
+      border-radius: 6px;
+      font-size: 18px;
+      line-height: 1.6;
+      display: none;
+    }
+    .detox-highlight {
+      color: #E6FF2A;
+      font-weight: bold;
+      font-size: 20px;
+    }
+  </style>
+
+  <div class="detox-input-group">
+    <label class="detox-label" for="curr-time">Tempo de tela atual por dia:</label>
+    <span class="detox-sub-label">Digite no formato hora:minuto (Ex: 5:30 ou 5h30)</span>
+    <input class="detox-input" type="text" inputmode="text" id="curr-time" placeholder="Ex: 5:30">
+  </div>
+
+  <div class="detox-input-group">
+    <label class="detox-label" for="target-time">Sua meta de uso por dia:</label>
+    <span class="detox-sub-label">O quanto você quer passar a usar (Ex: 2:00 ou 2h)</span>
+    <input class="detox-input" type="text" inputmode="text" id="target-time" placeholder="Ex: 2:00">
+  </div>
+
+  <button class="detox-btn" onclick="calculateDetox()">Calcular meu tempo</button>
+
+  <div id="detox-result"></div>
+
+  <script>
+    function parseTimeToMinutes(inputStr) {
+      if (!inputStr) return 0;
+      inputStr = inputStr.replace(/ /g, '').toLowerCase(); 
+      
+      let h = 0, m = 0;
+      
+      if (inputStr.includes(':')) {
+        let parts = inputStr.split(':');
+        h = parseInt(parts[0]) || 0;
+        m = parseInt(parts[1]) || 0;
+      } else if (inputStr.includes('h')) {
+        let parts = inputStr.split('h');
+        h = parseInt(parts[0]) || 0;
+        m = parseInt(parts[1]) || 0;
+      } else if (inputStr.includes(',') || inputStr.includes('.')) {
+        let val = parseFloat(inputStr.replace(',', '.'));
+        h = Math.floor(val);
+        m = Math.round((val - h) * 60);
+      } else {
+        h = parseInt(inputStr) || 0;
+      }
+
+      // TRAVAS DE SEGURANÇA SEPARADAS
+      if (h > 24 || (h === 24 && m > 0)) {
+        return -2; // Erro de horas
+      }
+      
+      if (m >= 60) {
+        return -1; // Erro de minutos
+      }
+
+      return (h * 60) + m;
+    }
+
+    function calculateDetox() {
+      var currInput = document.getElementById('curr-time').value;
+      var targetInput = document.getElementById('target-time').value;
+      var resultDiv = document.getElementById('detox-result');
+
+      var totalCurrMins = parseTimeToMinutes(currInput);
+      var totalTargetMins = parseTimeToMinutes(targetInput);
+
+      // AVISO 1: Horas além do limite
+      if (totalCurrMins === -2 || totalTargetMins === -2) {
+        resultDiv.style.display = 'block';
+        resultDiv.innerHTML = "Ops! Parece que você digitou um tempo inválido. Lembre-se que o dia tem apenas 24 horas.";
+        return;
+      }
+
+      // AVISO 2: Minutos além do limite
+      if (totalCurrMins === -1 || totalTargetMins === -1) {
+        resultDiv.style.display = 'block';
+        resultDiv.innerHTML = "Ops! Parece que você digitou um tempo inválido. Lembre-se que os minutos vão só até 59.";
+        return;
+      }
+
+      if (totalCurrMins <= 0) {
+        resultDiv.style.display = 'block';
+        resultDiv.innerHTML = "Por favor, insira o seu tempo atual de tela.";
+        return;
+      }
+
+      if (totalTargetMins >= totalCurrMins) {
+        resultDiv.style.display = 'block';
+        resultDiv.innerHTML = "Sua meta deve ser menor que o seu tempo atual para que haja economia de tempo!";
+        return;
+      }
+
+      // Cálculos anuais (em horas redondas)
+      var currentYearlyHours = Math.round((totalCurrMins * 365) / 60);
+      var targetYearlyHours = Math.round((totalTargetMins * 365) / 60);
+      var savedYearlyHours = currentYearlyHours - targetYearlyHours;
+
+      // Tradução de horas para dias (24h)
+      var currentFullDays = Math.round(currentYearlyHours / 24);
+      var savedFullDays = Math.round(savedYearlyHours / 24);
+
+      resultDiv.style.display = 'block';
+      resultDiv.innerHTML = "Em um ano, você gasta <span class='detox-highlight'>" + currentYearlyHours + " horas</span> nas telas, são <span class='detox-highlight'>" + currentFullDays + " dias inteiros</span>!<br><br>" +
+                            "Com a sua meta, passaria a gastar <span class='detox-highlight'>" + targetYearlyHours + " horas</span>, sobrando <span class='detox-highlight'>" + savedYearlyHours + " horas</span>, ou <span class='detox-highlight'>" + savedFullDays + " dias</span>, para ler, meditar, praticar esportes e passar tempo com a família.";
+    }
+  </script>
+</div></body></html>
