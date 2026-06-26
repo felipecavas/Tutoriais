@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Deepfake - Veriff</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800&amp;display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #005F6B;
+            --accent: #E6FF2A;
+            --dark-sidebar: #004b55;
+            --dark-content: #005F6B;
+            --text: #ffffff;
+            --text-muted: #b0e0e6;
+            --whatsapp: #25D366; /* Cor oficial do WhatsApp */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body, html {
+            background-color: var(--dark-content);
+            color: var(--text);
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        /* Estrutura Principal do Quiz */
+        .quiz-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            width: 100%;
+        }
+
+        @media (min-width: 768px) {
+            .quiz-container {
+                flex-direction: row;
+                height: 100vh;
+                overflow: hidden;
+            }
+        }
+
+        /* Painel Esquerdo */
+        .sidebar {
+            background-color: var(--dark-sidebar);
+            padding: 40px 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            flex: 0 0 auto;
+        }
+
+        @media (min-width: 768px) {
+            .sidebar {
+                flex: 0 0 38%;
+                height: 100vh;
+                padding: 60px;
+                border-right: 1px solid rgba(230, 255, 42, 0.2);
+            }
+        }
+
+        .logo-container {
+            position: absolute;
+            top: 25px;
+            left: 30px;
+            z-index: 10;
+        }
+
+        @media (min-width: 768px) {
+            .logo-container {
+                top: 40px;
+                left: 60px;
+            }
+        }
+
+        .logo-link img {
+            height: 28px;
+            width: auto;
+            display: block;
+            transition: opacity 0.2s ease;
+            filter: brightness(0) invert(1); 
+        }
+
+        .logo-link:hover img {
+            opacity: 0.8;
+        }
+
+        .progress {
+            font-size: 0.9rem;
+            color: var(--accent);
+            font-weight: 700;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .question-text {
+            font-size: 1.8rem;
+            font-weight: 800;
+            line-height: 1.3;
+            margin-bottom: 20px;
+            color: var(--text);
+        }
+
+        @media (min-width: 768px) {
+            .question-text {
+                font-size: 2.3rem;
+            }
+        }
+
+        /* Área de Mídia */
+        .content-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--dark-content);
+            justify-content: space-between;
+            padding: 20px;
+            position: relative;
+            min-height: 0;
+        }
+
+        @media (min-width: 768px) {
+            .content-area {
+                height: 100vh;
+                padding: 40px;
+            }
+        }
+
+        .media-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            min-height: 0;
+        }
+
+        .media-wrapper {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+
+        @media (min-width: 768px) {
+            .media-wrapper.double {
+                flex-direction: row;
+                align-items: stretch;
+            }
+        }
+
+        .media-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            min-height: 0; 
+            position: relative;
+        }
+
+        .media-box img, .media-box video {
+            max-width: 100%;
+            max-height: 52vh; 
+            object-fit: contain;
+            border-radius: 6px;
+            box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+            background-color: rgba(0, 0, 0, 0.15);
+        }
+
+        @media (min-width: 768px) {
+            .media-box img, .media-box video {
+                max-height: 70vh;
+            }
+        }
+
+        .actions-container {
+            display: flex;
+            gap: 15px;
+            width: 100%;
+            max-width: 600px;
+            margin: 20px auto 0 auto;
+        }
+
+        .double-btn-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .btn-quiz {
+            width: 100%;
+            padding: 16px 24px;
+            border: 2px solid var(--accent);
+            border-radius: 6px;
+            background-color: transparent;
+            color: var(--accent);
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        .btn-quiz:hover {
+            background-color: var(--accent);
+            color: var(--dark-sidebar);
+            box-shadow: 0 4px 15px rgba(230, 255, 42, 0.4);
+        }
+
+        /* Layout da Tela de Resultados */
+        .results-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            width: 100%;
+        }
+
+        @media (min-width: 768px) {
+            .results-container {
+                flex-direction: row;
+                height: 100vh;
+                overflow: hidden;
+            }
+        }
+
+        .results-sidebar {
+            background-color: var(--dark-sidebar);
+            padding: 60px 40px;
+            flex: 0 0 auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+
+        @media (min-width: 768px) {
+            .results-sidebar {
+                flex: 0 0 38%;
+                height: 100vh;
+                padding: 60px;
+                border-right: 1px solid rgba(230, 255, 42, 0.2);
+            }
+        }
+
+        .score-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--text);
+            margin-top: 10px;
+            line-height: 1.1;
+        }
+
+        .score-sub {
+            margin: 20px 0 25px 0;
+            color: var(--text-muted);
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        /* Grupo de Botões Finais */
+        .final-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 25px;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .btn-accent, .btn-whatsapp {
+            padding: 16px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 800;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-align: center;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .btn-accent {
+            background-color: var(--accent);
+            color: var(--dark-sidebar);
+        }
+
+        .btn-accent:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(230, 255, 42, 0.4);
+        }
+
+        .btn-whatsapp {
+            background-color: var(--whatsapp);
+            color: #ffffff;
+        }
+
+        .btn-whatsapp:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
+        }
+
+        .whatsapp-icon {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        .report-link {
+            color: var(--text);
+            font-weight: 700;
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        .report-link:hover {
+            color: var(--accent);
+        }
+
+        .results-grid-wrapper {
+            flex: 1;
+            padding: 30px 20px;
+            background-color: var(--dark-content);
+        }
+
+        @media (min-width: 768px) {
+            .results-grid-wrapper {
+                height: 100vh;
+                overflow-y: auto;
+                padding: 50px;
+            }
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .result-card {
+            position: relative;
+            border-radius: 6px;
+            overflow: hidden;
+            aspect-ratio: 1 / 1;
+            background-color: var(--dark-sidebar);
+            border: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .result-card img, .result-card video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background-color: rgba(0,0,0,0.2);
+        }
+
+        .result-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1rem;
+            color: #ffffff;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+        }
+
+        .badge-correct { background-color: #00CC66; }
+        .badge-wrong { background-color: #FF3333; }
+
+        .result-label {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(transparent, rgba(0,43,49,0.95));
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-align: center;
+        }
+
+        .footer-note {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: auto;
+            padding-top: 30px;
+        }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div id="start-screen" class="quiz-container hidden">
+        <div class="sidebar">
+            <div class="logo-container">
+                <a href="https://www.veriff.com/" target="_blank" class="logo-link">
+                    <img src="https://raw.githubusercontent.com/felipecavas/quiz-deepfak/main/Veriff_logo.svg.png" alt="Veriff Logo">
+                </a>
+            </div>
+            <div class="question-text" style="margin-top: 50px;">Você consegue identificar um Deepfake?</div>
+            <div class="score-sub" style="font-size: 1.1rem;">Teste suas habilidades e veja se você sabe diferenciar imagens e vídeos reais daqueles gerados por Inteligência Artificial.</div>
+        </div>
+        <div class="content-area" style="justify-content: center; align-items: center;">
+            <button class="btn-accent" style="padding: 20px 40px; font-size: 1.2rem; max-width: 350px;" onclick="startQuiz()">Comece o teste</button>
+        </div>
+    </div>
+
+    <div id="quiz-screen" class="quiz-container">
+        <div class="sidebar">
+            <div class="logo-container">
+                <a href="https://www.veriff.com/" target="_blank" class="logo-link">
+                    <img src="https://raw.githubusercontent.com/felipecavas/quiz-deepfak/main/Veriff_logo.svg.png" alt="Veriff Logo">
+                </a>
+            </div>
+            <div id="progress" class="progress">1 / 12</div>
+            <div id="question-text" class="question-text">Este vídeo é autêntico ou gerado por IA?</div>
+        </div>
+        <div class="content-area">
+            <div class="media-container">
+                <div id="media-wrapper" class="media-wrapper"><div class="media-box"><video src="https://raw.githubusercontent.com/felipecavas/quiz-deepfak/main/Veriff%2012.mp4" autoplay="" loop="" muted="" playsinline=""></video></div></div>
+            </div>
+            <div id="global-actions" class="actions-container">
+                    <button class="btn-quiz" onclick="handleAnswer('Real')">Real</button>
+                    <button class="btn-quiz" onclick="handleAnswer('Gerado por IA')">Gerado por IA</button>
+                </div>
+        </div>
+    </div>
+
+    <div id="end-screen" class="results-container hidden">
+        <div class="results-sidebar">
+            <div class="logo-container">
+                <a href="https://www.veriff.com/" target="_blank" class="logo-link">
+                    <img src="https://raw.githubusercontent.com/felipecavas/quiz-deepfak/main/Veriff_logo.svg.png" alt="Veriff Logo">
+                </a>
+            </div>
+            <div class="progress" style="margin-top: 40px;">Sua pontuação</div>
+            <div id="score-text" class="score-title">0 de 12<br>corretas</div>
+            <div id="performance-feedback" class="score-sub"></div>
+            
+            <div class="final-actions">
+                <a id="btn-share-whatsapp" href="#" target="_blank" class="btn-whatsapp">
+                    <svg class="whatsapp-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zM223.9 413.6c-33.6 0-66.5-9-95.2-26.1l-6.8-4-70.8 18.6 18.9-69-4.4-7C46.8 296 36.3 260.6 36.3 223.9c0-103.5 84.3-187.8 187.8-187.8 50.1 0 97.2 19.5 132.6 55 35.4 35.4 54.9 82.5 54.9 132.6 0 103.6-84.3 187.9-187.8 187.9zm102.1-139.7c-5.6-2.8-33-16.3-38.1-18.1-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.4 18.1-17.7 21.8-3.3 3.7-6.5 4.2-12.1 1.4-5.6-2.8-23.5-8.7-44.8-27.8-16.6-14.8-27.8-33.1-30.6-38.7-2.8-5.6-.3-8.6 2.5-11.4 2.5-2.6 5.6-6.5 8.4-9.8 2.8-3.3 3.7-5.6 5.6-9.3 1.9-3.7.9-7-.5-9.8-1.4-2.8-12.5-30.2-17.1-41.3-4.5-10.8-9.1-9.3-12.5-9.5-3.3-.2-7-.2-10.7-.2-3.7 0-9.8 1.4-14.9 7s-19.5 19.1-19.5 46.5 20 53.9 22.8 57.6c2.8 3.7 39.3 59.9 95.2 84.1 13.3 5.7 23.7 9.1 31.8 11.7 13.3 4.2 25.4 3.6 35 2.2 10.7-1.5 33-13.5 37.6-26.5 4.7-13 4.7-24.2 3.3-26.5-1.4-2.4-5.1-3.8-10.7-6.6z"></path></svg>
+                    Compartilhe
+                </a>
+                <button class="btn-accent" onclick="restartQuiz()">Tente novamente</button>
+            </div>
+            
+            <a href="https://www.veriff.com/" target="_blank" class="report-link">
+                Leia o Veriff Deepfakes Report 2026 ↗
+            </a>
+            <div class="footer-note">* De acordo com o Veriff Deepfakes Report 2026.</div>
+        </div>
+        
+        <div class="results-grid-wrapper">
+            <div id="results-grid" class="results-grid"></div>
+        </div>
+    </div>
+
+    <script>
+        // =====================================================================
+        // CONFIGURAÇÃO DO LINK DA MATÉRIA PARA O WHATSAPP
+        // Cole o link da sua matéria aqui depois que ela for publicada!
+        // Enquanto não tiver, você pode deixar um link provisório.
+        // =====================================================================
+        const LINK_DA_MATERIA = "https://www.google.com"; 
+
+        const RAW_BASE = "https://raw.githubusercontent.com/felipecavas/quiz-deepfak/main/";
+
+        const masterQuestions = [
+            { id: 1, type: "single", file: "Veriff 1.jpg", answer: "Real", question: "Esta imagem é autêntica ou gerada por IA?" },
+            { id: 2, type: "single", file: "veriff 2.jpg", answer: "Gerado por IA", question: "Esta imagem é autêntica ou gerada por IA?" },
+            { id: 3, type: "single", file: "Veriff 3.png", answer: "Gerado por IA", question: "Esta imagem é autêntica ou gerada por IA?" },
+            { id: 4, type: "double", files: ["Veriff 4.1.png", "Veriff 4.2.jpg"], correctIndex: 0, question: "Qual destas imagens é gerada por IA?" }, 
+            { id: 5, type: "single", file: "Veriff 5.jpg", answer: "Gerado por IA", question: "Esta imagem é autêntica ou gerada por IA?" },
+            { id: 6, type: "single", file: "Veriff 6.mp4", answer: "Gerado por IA", question: "Este vídeo é autêntico ou gerado por IA?" },
+            { id: 7, type: "single", file: "Veriff 7.mp4", answer: "Real", question: "Este vídeo é autêntico ou gerado por IA?" },
+            { id: 8, type: "double", files: ["Veriff 8.1.jpg", "Veriff 8.2.png"], correctIndex: 1, question: "Qual destas imagens é gerada por IA?" }, 
+            { id: 9, type: "double", files: ["Veriff 9.1.png", "Veriff 9.2.jpg"], correctIndex: 0, question: "Qual destas imagens é gerada por IA?" }, 
+            { id: 10, type: "single", file: "Veriff 10.jpg", answer: "Real", question: "Esta imagem é autêntica ou gerada por IA?" },
+            { id: 11, type: "single", file: "Veriff 11.mp4", answer: "Gerado por IA", question: "Este vídeo é autêntico ou gerado por IA?" },
+            { id: 12, type: "single", file: "Veriff 12.mp4", answer: "Real", question: "Este vídeo é autêntico ou gerado por IA?" }
+        ];
+
+        let currentQuestions = [];
+        let currentIndex = 0;
+        let score = 0;
+        let userAnswers = [];
+
+        function initApp() {
+            // Garante que apenas a tela inicial fique visível ao carregar
+            document.getElementById("start-screen").classList.remove("hidden");
+            document.getElementById("quiz-screen").classList.add("hidden");
+            document.getElementById("end-screen").classList.add("hidden");
+        }
+
+        function startQuiz() {
+            // Transição de telas
+            document.getElementById("start-screen").classList.add("hidden");
+            document.getElementById("end-screen").classList.add("hidden");
+            document.getElementById("quiz-screen").classList.remove("hidden");
+
+            currentQuestions = [...masterQuestions].sort(() => Math.random() - 0.5);
+            currentIndex = 0;
+            score = 0;
+            userAnswers = [];
+            
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const q = currentQuestions[currentIndex];
+            document.getElementById("progress").innerText = `${currentIndex + 1} / 12`;
+            document.getElementById("question-text").innerText = q.question;
+
+            const wrapper = document.getElementById("media-wrapper");
+            const globalActions = document.getElementById("global-actions");
+            
+            wrapper.innerHTML = "";
+            globalActions.innerHTML = "";
+
+            if (q.type === "single") {
+                wrapper.className = "media-wrapper";
+                const box = document.createElement("div");
+                box.className = "media-box";
+                box.innerHTML = createMediaTag(q.file);
+                wrapper.appendChild(box);
+
+                globalActions.innerHTML = `
+                    <button class="btn-quiz" onclick="handleAnswer('Real')">Real</button>
+                    <button class="btn-quiz" onclick="handleAnswer('Gerado por IA')">Gerado por IA</button>
+                `;
+            } else if (q.type === "double") {
+                wrapper.className = "media-wrapper double";
+                
+                q.files.forEach((file, index) => {
+                    const box = document.createElement("div");
+                    box.className = "media-box";
+                    
+                    box.innerHTML = `
+                        ${createMediaTag(file)}
+                        <div class="double-btn-container">
+                            <button class="btn-quiz" onclick="handleDoubleAnswer(${index})">Isto é gerado por IA</button>
+                        </div>
+                    `;
+                    wrapper.appendChild(box);
+                });
+            }
+        }
+
+        function createMediaTag(filename) {
+            const src = RAW_BASE + encodeURIComponent(filename);
+            if (filename.toLowerCase().endsWith(".mp4")) {
+                return `<video src="${src}" autoplay loop muted playsinline></video>`;
+            }
+            return `<img src="${src}" alt="Quiz Media">`;
+        }
+
+        function handleAnswer(selected) {
+            const q = currentQuestions[currentIndex];
+            const isCorrect = selected === q.answer;
+            if (isCorrect) score++;
+
+            userAnswers.push({
+                file: q.file,
+                isCorrect: isCorrect,
+                label: q.answer
+            });
+
+            nextStep();
+        }
+
+        function handleDoubleAnswer(selectedIndex) {
+            const q = currentQuestions[currentIndex];
+            const isCorrect = selectedIndex === q.correctIndex;
+            if (isCorrect) score++;
+
+            const chosenFile = q.files[selectedIndex];
+            userAnswers.push({
+                file: chosenFile,
+                isCorrect: isCorrect,
+                label: isCorrect ? "Acertou a IA" : "Escolha Incorreta"
+            });
+
+            nextStep();
+        }
+
+        function nextStep() {
+            currentIndex++;
+            if (currentIndex < 12) {
+                renderQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            document.getElementById("quiz-screen").classList.add("hidden");
+            document.getElementById("end-screen").classList.remove("hidden");
+            
+            document.getElementById("score-text").innerHTML = `${score} de 12<br>corretas`;
+            
+            const percent = Math.round((score / 12) * 100);
+            document.getElementById("performance-feedback").innerText = 
+                `Nada mal — você acertou ${percent}%. A média é 55%*, então você está no caminho certo.`;
+
+            // Lógica do botão do WhatsApp
+            const textoWhatsApp = `Acabei de testar meus conhecimentos no Quiz Deepfake e acertei ${score} de 12! Será que você consegue fazer melhor? Jogue aqui: ${LINK_DA_MATERIA}`;
+            
+            // encodeURIComponent transforma o texto em um formato lido por URLs (transformando os espaços em %20, etc)
+            document.getElementById("btn-share-whatsapp").href = `https://api.whatsapp.com/send?text=${encodeURIComponent(textoWhatsApp)}`;
+            
+            const grid = document.getElementById("results-grid");
+            grid.innerHTML = "";
+
+            userAnswers.forEach(ans => {
+                const card = document.createElement("div");
+                card.className = "result-card";
+                
+                const badgeClass = ans.isCorrect ? "badge-correct" : "badge-wrong";
+                const badgeIcon = ans.isCorrect ? "&#10003;" : "X";
+
+                card.innerHTML = `
+                    ${createMediaTag(ans.file)}
+                    <div class="result-badge ${badgeClass}">${badgeIcon}</div>
+                    <div class="result-label">${ans.label}</div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function restartQuiz() {
+            startQuiz();
+        }
+
+        window.onload = initApp;
+    </script>
+
+</body></html>
