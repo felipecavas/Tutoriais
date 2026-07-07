@@ -2,10 +2,10 @@
 <html lang="pt-BR"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz Deepfake - Veriff</title>
+    <title>Quiz Deepfake</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800&display=swap" rel="stylesheet">
     
     <style>
         :root {
@@ -68,37 +68,11 @@
             }
         }
 
-        .logo-container {
-            position: absolute;
-            top: 25px;
-            left: 30px;
-            z-index: 10;
-        }
-
-        @media (min-width: 768px) {
-            .logo-container {
-                top: 40px;
-                left: 60px;
-            }
-        }
-
-        .logo-link img {
-            height: 28px;
-            width: auto;
-            display: block;
-            transition: opacity 0.2s ease;
-            filter: brightness(0) invert(1); 
-        }
-
-        .logo-link:hover img {
-            opacity: 0.8;
-        }
-
         .progress {
             font-size: 0.9rem;
             color: var(--accent);
             font-weight: 700;
-            margin-top: 30px;
+            margin-top: 15px;
             margin-bottom: 15px;
             text-transform: uppercase;
             letter-spacing: 2px;
@@ -422,7 +396,8 @@
             font-size: 0.75rem;
             color: var(--text-muted);
             margin-top: auto;
-            padding-top: 30px;
+            padding-top: 20px;
+            line-height: 1.4;
         }
 
         .hidden { display: none !important; }
@@ -430,50 +405,37 @@
 </head>
 <body>
 
-    <div id="start-screen" class="quiz-container hidden">
+    <div id="start-screen" class="quiz-container">
         <div class="sidebar">
-            <div class="logo-container">
-                <a href="https://www.veriff.com/" target="_blank" class="logo-link">
-                    <img src="https://raw.githubusercontent.com/felipecavas/quiz-deepfak/main/Veriff_logo.svg.png" alt="Veriff Logo">
-                </a>
+            <div class="question-text">Você consegue identificar um Deepfake?</div>
+            <div class="score-sub" style="font-size: 1.1rem; margin-bottom: 40px;">
+                Teste suas habilidades e veja se você sabe diferenciar imagens e vídeos reais daqueles gerados por Inteligência Artificial.
             </div>
-            <div class="question-text" style="margin-top: 50px;">Você consegue identificar um Deepfake?</div>
-            <div class="score-sub" style="font-size: 1.1rem;">Teste suas habilidades e veja se você sabe diferenciar imagens e vídeos reais daqueles gerados por Inteligência Artificial.</div>
+            <div class="footer-note" style="margin-top: auto; padding-top: 0;">
+                *Este conteúdo foi adaptado e reproduzido pelo VIVA com base no quiz original desenvolvido pela Veriff.
+            </div>
         </div>
         <div class="content-area" style="justify-content: center; align-items: center;">
             <button class="btn-accent" style="padding: 20px 40px; font-size: 1.2rem; max-width: 350px;" onclick="startQuiz()">Comece o teste</button>
         </div>
     </div>
 
-    <div id="quiz-screen" class="quiz-container">
+    <div id="quiz-screen" class="quiz-container hidden">
         <div class="sidebar">
-            <div class="logo-container">
-                <a href="https://www.veriff.com/" target="_blank" class="logo-link">
-                    <img src="https://raw.githubusercontent.com/felipecavas/quiz-deepfak/main/Veriff_logo.svg.png" alt="Veriff Logo">
-                </a>
-            </div>
             <div id="progress" class="progress">1 / 12</div>
             <div id="question-text" class="question-text">Este vídeo é autêntico ou gerado por IA?</div>
         </div>
         <div class="content-area">
             <div class="media-container">
-                <div id="media-wrapper" class="media-wrapper"><div class="media-box"><video src="https://raw.githubusercontent.com/felipecavas/quiz-deepfak/main/Veriff%2012.mp4" autoplay="" loop="" muted="" playsinline=""></video></div></div>
+                <div id="media-wrapper" class="media-wrapper"></div>
             </div>
-            <div id="global-actions" class="actions-container">
-                    <button class="btn-quiz" onclick="handleAnswer('Real')">Real</button>
-                    <button class="btn-quiz" onclick="handleAnswer('Gerado por IA')">Gerado por IA</button>
-                </div>
+            <div id="global-actions" class="actions-container"></div>
         </div>
     </div>
 
     <div id="end-screen" class="results-container hidden">
         <div class="results-sidebar">
-            <div class="logo-container">
-                <a href="https://www.veriff.com/" target="_blank" class="logo-link">
-                    <img src="https://raw.githubusercontent.com/felipecavas/quiz-deepfak/main/Veriff_logo.svg.png" alt="Veriff Logo">
-                </a>
-            </div>
-            <div class="progress" style="margin-top: 40px;">Sua pontuação</div>
+            <div class="progress" style="margin-top: 20px;">Sua pontuação</div>
             <div id="score-text" class="score-title">0 de 12<br>corretas</div>
             <div id="performance-feedback" class="score-sub"></div>
             
@@ -488,7 +450,10 @@
             <a href="https://www.veriff.com/" target="_blank" class="report-link">
                 Leia o Veriff Deepfakes Report 2026 ↗
             </a>
-            <div class="footer-note">* De acordo com o Veriff Deepfakes Report 2026.</div>
+            <div class="footer-note">
+                * De acordo com o Veriff Deepfakes Report 2026.<br><br>
+                <strong>Créditos:</strong> Conteúdo originalmente desenvolvido pela Veriff e reproduzido pelo VIVA.
+            </div>
         </div>
         
         <div class="results-grid-wrapper">
@@ -497,13 +462,7 @@
     </div>
 
     <script>
-        // =====================================================================
-        // CONFIGURAÇÃO DO LINK DA MATÉRIA PARA O WHATSAPP
-        // Cole o link da sua matéria aqui depois que ela for publicada!
-        // Enquanto não tiver, você pode deixar um link provisório.
-        // =====================================================================
         const LINK_DA_MATERIA = "https://www.google.com"; 
-
         const RAW_BASE = "https://raw.githubusercontent.com/felipecavas/quiz-deepfak/main/";
 
         const masterQuestions = [
@@ -527,14 +486,12 @@
         let userAnswers = [];
 
         function initApp() {
-            // Garante que apenas a tela inicial fique visível ao carregar
             document.getElementById("start-screen").classList.remove("hidden");
             document.getElementById("quiz-screen").classList.add("hidden");
             document.getElementById("end-screen").classList.add("hidden");
         }
 
         function startQuiz() {
-            // Transição de telas
             document.getElementById("start-screen").classList.add("hidden");
             document.getElementById("end-screen").classList.add("hidden");
             document.getElementById("quiz-screen").classList.remove("hidden");
@@ -643,10 +600,7 @@
             document.getElementById("performance-feedback").innerText = 
                 `Nada mal — você acertou ${percent}%. A média é 55%*, então você está no caminho certo.`;
 
-            // Lógica do botão do WhatsApp
             const textoWhatsApp = `Acabei de testar meus conhecimentos no Quiz Deepfake e acertei ${score} de 12! Será que você consegue fazer melhor? Jogue aqui: ${LINK_DA_MATERIA}`;
-            
-            // encodeURIComponent transforma o texto em um formato lido por URLs (transformando os espaços em %20, etc)
             document.getElementById("btn-share-whatsapp").href = `https://api.whatsapp.com/send?text=${encodeURIComponent(textoWhatsApp)}`;
             
             const grid = document.getElementById("results-grid");
